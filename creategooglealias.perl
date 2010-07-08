@@ -114,7 +114,7 @@ foreach my $alias (@aliases)
 			my $htmloutput = `$commandlineoption{curlcommand} "$redirecturl"`;
 			
 			
-			if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
+			if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
 			{
 				print $htmloutput;
 				die __LINE__."Seems to be not logged in as admin on Dashboard (no menu users)\n";
@@ -129,10 +129,10 @@ foreach my $alias (@aliases)
 		}
 
 		{
-			my $htmloutput = `$commandlineoption{curlcommand}	"https://www.google.com/a/cpanel/$commandlineoption{domainname}/Users"`;
+			my $htmloutput = `$commandlineoption{curlcommand}	"$commandlineoption{googleserver}/a/cpanel/$commandlineoption{domainname}/Users"`;
 			
 			
-			if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
+			if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
 			{
 				print $htmloutput;
 				die __LINE__."Seems to be not logged in on Dashboard\n";
@@ -147,10 +147,10 @@ foreach my $alias (@aliases)
 			print "OK\n";
 		}
 		{
-			my $htmloutput = `$commandlineoption{curlcommand}	"https://www.google.com/a/cpanel/$commandlineoption{domainname}/User?userEmail=$commandlineoption{aliasuser}%40$commandlineoption{domainname}"`;
+			my $htmloutput = `$commandlineoption{curlcommand}	"$commandlineoption{googleserver}/a/cpanel/$commandlineoption{domainname}/User?userEmail=$commandlineoption{aliasuser}%40$commandlineoption{domainname}"`;
 			
 			
-			if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
+			if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
 			{
 				print $htmloutput;
 				die __LINE__."Seems to be not logged in on Dashboard\n";
@@ -188,10 +188,10 @@ foreach my $alias (@aliases)
 												-d "addNickname='.$alias.'"'));
 		
 	
-		my $htmloutput = `$commandlineoption{curlcommand} $options	"https://www.google.com/a/cpanel/jinx.eu/UserAction"`;
+		my $htmloutput = `$commandlineoption{curlcommand} $options	"$commandlineoption{googleserver}/a/cpanel/$commandlineoption{domainname}/UserAction"`;
 		
 		
-		if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
+		if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
 		{
 			print $htmloutput;
 			die __LINE__."Seems to be not logged in on Dashboard\n";
