@@ -19,7 +19,7 @@ my %commandlineoption = JNX::Configuration::newFromDefaults( {
 
 use strict;
 
-$commandlineoption{curlcommand}	.= '--cookie '.$commandlineoption{cookiejar}.' --cookie-jar '.$commandlineoption{cookiejar}.' ';
+$commandlineoption{curlcommand}	.= ' --cookie '.$commandlineoption{cookiejar}.' --cookie-jar '.$commandlineoption{cookiejar}.' ';
 unlink($commandlineoption{cookiejar});
 
 
@@ -72,7 +72,7 @@ foreach my $alias (@aliases)
 			die __LINE__."Can't find dsh in pre-login\n";
 		}
 		$dsh = $1;
-		print "DSH: $dsh\n";
+		# print "DSH: $dsh\n";
 		
 		if( 1 != ($htmloutput =~ m#<input\s+type="hidden"\s+name="GALX"\s+value="(.*?)"\s/>#io) )
 		{
@@ -80,14 +80,12 @@ foreach my $alias (@aliases)
 			die __LINE__."Can't find GALX in pre-login\n";
 		}
 		$galx = $1;
-		print "GALX: $galx\n";
+		# print "GALX: $galx\n";
 		
 		
 		{
 			my $dashboardurl = $commandlineoption{googleserver}."/a/cpanel/$commandlineoption{domainname}/Dashboard";
 			my $htmloutput = `$commandlineoption{curlcommand}  -d "dsh=$dsh" -d "GALX=$galx" -d "Passwd=$adminpassword" -d "Email=$commandlineoption{adminname}" -d "PersistentCookie=yes" -d "rmShown=1" -d "asts=" -d "signIn=Sign in" -d "continue=$dashboardurl" -d "followup=$dashboardurl" "$commandlineoption{googleserver}/a/$commandlineoption{domainname}/LoginAction2?service=CPanel"`;
-			# my $htmloutput = `$commandlineoption{curlcommand} -d "dsh=$dsh" -d "GALX=$galx" -d "Passwd=$adminpassword" -d "Email=$commandlineoption{adminname}" -d "PersistentCookie=no" "$commandlineoption{googleserver}/a/$commandlineoption{domainname}/LoginAction2"`;
-					print $htmloutput;
 		
 			if( 1 != ($htmloutput =~ m#The document has moved <A HREF="(.*?)">here</A>#io) )
 			{
@@ -125,7 +123,6 @@ foreach my $alias (@aliases)
 				die __LINE__."Seems to be not logged in on Dashboard (no time)\n";
 			}
 			$timenow=$1;
-			print "Time now: $timenow\n";
 		}
 
 		{
@@ -143,8 +140,6 @@ foreach my $alias (@aliases)
 				die __LINE__."Seems to be not logged in on Dashboard (no time)\n";
 			}
 			$timenow=$1;
-			print "Time now: $timenow\n";
-			print "OK\n";
 		}
 		{
 			my $htmloutput = `$commandlineoption{curlcommand}	"$commandlineoption{googleserver}/a/cpanel/$commandlineoption{domainname}/User?userEmail=$commandlineoption{aliasuser}%40$commandlineoption{domainname}"`;
@@ -161,8 +156,7 @@ foreach my $alias (@aliases)
 				die __LINE__."Seems to be not logged in on Dashboard (no time)\n";
 			}
 			$timenow=$1;
-			print "Time now: $timenow\n";
-			print "OK\n";
+			print "Login OK\n";
 		}
 	}
 	
