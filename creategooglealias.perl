@@ -1,17 +1,26 @@
 #!/bin/perl
-
+#
+#
+#	
+#
 use keychaincredentials;
-
-my $adminname 		= 'jolly';
-my $domainname		= 'jinx.eu';
-
-my $aliasuser		= 'robot';
+use JNX::Configuration;
 
 
-$curlcmd		= 'sleep 1;curl -D - --cookie cookiejar --cookie-jar cookiejar -H "Content-type=application/x-www-form-urlencoded" ';
-$googleserver	= 'https://www.google.com';
+my %commandlineoption = JNX::Configuration::newFromDefaults( {																	
+																	'googleserver'				=>	['https://www.google.com','string'],
+																	'adminname'					=>	['admin','string'],
+																	'domainname'				=>	['example.com','string'],
+																	'aliasuser'					=>	['john','string'],
+																	'cookiejar'					=>	['cookiejar','string'],
+																	'curlcommand'				=>	['sleep 1;curl -D - --cookie cookiejar --cookie-jar cookiejar -H "Content-type=application/x-www-form-urlencoded"','string'],
+															 }, __PACKAGE__ );
 
-unlink('cookiejar');
+
+use strict;
+
+$commandlineoption{curlcommand}	.= '--cookie '.$commandlineoption{cookiejar}.' --cookie-jar '.$commandlineoption{cookiejar}.' ';
+unlink($commandlineoption{cookiejar});
 
 
 my @aliases;
@@ -19,7 +28,7 @@ my @aliases;
 
 print "Alias (Ctrl-D to exit) :";
 
-while( $_ =<> )
+while( $_ = <STDIN> )
 {
 	my $alias = $_;
 	
@@ -38,9 +47,9 @@ print "Creating aliases for: ".join(', ',@aliases)."\n";
 
 
 my $adminpassword	= undef;
-my $dsh,$galx,$ltmpl;
+my ($dsh,$galx,$ltmpl);
 my $redirecturl;
-
+my $timenow;
 
 
 
@@ -50,12 +59,12 @@ foreach my $alias (@aliases)
 		
 	while( !defined($adminpassword) )
 	{
-		$adminpassword = keychaincredentials::passwordForUserAtDomain($adminname.'@'.$domainname,'www.google.com');
+		$adminpassword = keychaincredentials::passwordForUserAtDomain($commandlineoption{adminname}.'@'.$commandlineoption{domainname},'www.google.com');
 
 		next if !defined($adminpassword);
 		
 		
-		my $htmloutput = `$curlcmd "$googleserver/a/$domainname/ServiceLogin"`;
+		my $htmloutput = `$commandlineoption{curlcommand} "$commandlineoption{googleserver}/a/$commandlineoption{domainname}/ServiceLogin"`;
 		
 		if( 1 != ($htmloutput =~ m#<input\s+type="hidden"\s+name="dsh"\s+id="dsh"\s+value="(.*?)"\s/>#io) )
 		{
@@ -75,9 +84,9 @@ foreach my $alias (@aliases)
 		
 		
 		{
-			my $dashboardurl = $googleserver."/a/cpanel/$domainname/Dashboard";
-			my $htmloutput = `$curlcmd  -d "dsh=$dsh" -d "GALX=$galx" -d "Passwd=$adminpassword" -d "Email=$adminname" -d "PersistentCookie=yes" -d "rmShown=1" -d "asts=" -d "signIn=Sign in" -d "continue=$dashboardurl" -d "followup=$dashboardurl" "$googleserver/a/$domainname/LoginAction2?service=CPanel"`;
-			# my $htmloutput = `$curlcmd -d "dsh=$dsh" -d "GALX=$galx" -d "Passwd=$adminpassword" -d "Email=$adminname" -d "PersistentCookie=no" "$googleserver/a/$domainname/LoginAction2"`;
+			my $dashboardurl = $commandlineoption{googleserver}."/a/cpanel/$commandlineoption{domainname}/Dashboard";
+			my $htmloutput = `$commandlineoption{curlcommand}  -d "dsh=$dsh" -d "GALX=$galx" -d "Passwd=$adminpassword" -d "Email=$commandlineoption{adminname}" -d "PersistentCookie=yes" -d "rmShown=1" -d "asts=" -d "signIn=Sign in" -d "continue=$dashboardurl" -d "followup=$dashboardurl" "$commandlineoption{googleserver}/a/$commandlineoption{domainname}/LoginAction2?service=CPanel"`;
+			# my $htmloutput = `$commandlineoption{curlcommand} -d "dsh=$dsh" -d "GALX=$galx" -d "Passwd=$adminpassword" -d "Email=$commandlineoption{adminname}" -d "PersistentCookie=no" "$commandlineoption{googleserver}/a/$commandlineoption{domainname}/LoginAction2"`;
 					print $htmloutput;
 		
 			if( 1 != ($htmloutput =~ m#The document has moved <A HREF="(.*?)">here</A>#io) )
@@ -90,7 +99,7 @@ foreach my $alias (@aliases)
 		}
 		
 		{
-			my $htmloutput = `$curlcmd "$redirecturl"`;
+			my $htmloutput = `$commandlineoption{curlcommand} "$redirecturl"`;
 
 			if( 1 != ($htmloutput =~ m#The document has moved <A HREF="(.*?)">here</A>#io) )
 			{
@@ -102,7 +111,7 @@ foreach my $alias (@aliases)
 		}
 
 		{
-			my $htmloutput = `$curlcmd "$redirecturl"`;
+			my $htmloutput = `$commandlineoption{curlcommand} "$redirecturl"`;
 			
 			
 			if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
@@ -120,7 +129,7 @@ foreach my $alias (@aliases)
 		}
 
 		{
-			my $htmloutput = `$curlcmd	"https://www.google.com/a/cpanel/$domainname/Users"`;
+			my $htmloutput = `$commandlineoption{curlcommand}	"https://www.google.com/a/cpanel/$commandlineoption{domainname}/Users"`;
 			
 			
 			if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
@@ -138,7 +147,7 @@ foreach my $alias (@aliases)
 			print "OK\n";
 		}
 		{
-			my $htmloutput = `$curlcmd	"https://www.google.com/a/cpanel/$domainname/User?userEmail=$aliasuser%40$domainname"`;
+			my $htmloutput = `$commandlineoption{curlcommand}	"https://www.google.com/a/cpanel/$commandlineoption{domainname}/User?userEmail=$commandlineoption{aliasuser}%40$commandlineoption{domainname}"`;
 			
 			
 			if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
@@ -162,9 +171,9 @@ foreach my $alias (@aliases)
 	#
 	{
 		my $options = join(' ',split(/\n\s+/,'-d "at='.$timenow.'"
-												-d "Email='.$aliasuser.'@'.$domainname.'"
-												-d "userName='.$aliasuser.'@'.$domainname.'"
-												-d "userEmail='.$aliasuser.'@'.$domainname.'"
+												-d "Email='.$commandlineoption{aliasuser}.'@'.$commandlineoption{domainname}.'"
+												-d "userName='.$commandlineoption{aliasuser}.'@'.$commandlineoption{domainname}.'"
+												-d "userEmail='.$commandlineoption{aliasuser}.'@'.$commandlineoption{domainname}.'"
 												-d "nameIsSet=false"
 												-d "password.isSet=false"
 												-d "changename=leavealone"
@@ -179,7 +188,7 @@ foreach my $alias (@aliases)
 												-d "addNickname='.$alias.'"'));
 		
 	
-		my $htmloutput = `$curlcmd $options	"https://www.google.com/a/cpanel/jinx.eu/UserAction"`;
+		my $htmloutput = `$commandlineoption{curlcommand} $options	"https://www.google.com/a/cpanel/jinx.eu/UserAction"`;
 		
 		
 		if( $htmloutput !~ m#<li\s+class="(:?selected)?"\s+id="CPanelMenuUsers">#io) 
@@ -198,5 +207,8 @@ foreach my $alias (@aliases)
 }				
 		
 print "Aliases created\n";
+
+unlink($commandlineoption{cookiejar});
+
 exit;
 

@@ -1,0 +1,36 @@
+Readme for googlescripts
+========================
+
+When you move from one provider to another (like I did) you sometimes need to create a hell of a lot mail aliases. I had the problem in needing spam generic aliases which were created with the dash instead of google using the minus.
+
+old:
+myspam-facebook.com@example.com
+
+new on google:
+myspam+facebook.com@example.com
+
+I needed to filter out the minus alias names I used in the past and add them as full aliases to an account.
+
+You need to install Config::IniFiles via perl -MCPAN -e shell
+You can create  a config inifile to store your settings instead of the commandlineoptions.
+
+
+
+creategooglealias.perl
+----------------------
+Creates mail aliases on a google hosted domain. 
+
+usage:
+perl creategooglealias.perl --adminname=myadmin --aliasuser=john --domainname=example.com <aliases.txt
+
+This will create the aliases named in the aliases text file to be added to user john. The credentials for the myadmin account will be taken from your keychain.
+
+
+keychaincredentials.pm 
+----------------------
+Module to get the credentials for an account out of the keychain.
+
+
+JNX::Configuration.pm
+---------------------
+Module I use to parse either the commandline for options or use the ini file.
