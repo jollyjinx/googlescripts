@@ -16,6 +16,7 @@ You can create  a config inifile to store your settings instead of the commandli
 
 
 
+
 creategooglealias.perl
 ----------------------
 Creates mail aliases on a google hosted domain. 
@@ -26,9 +27,42 @@ perl creategooglealias.perl --adminname=myadmin --aliasuser=john --domainname=ex
 This will create the aliases named in the aliases text file to be added to user john. The credentials for the myadmin account will be taken from your keychain.
 
 
+
+
+creategoogleusertablefromvirtual.perl
+-------------------------------------
+creates a bulk csv user table for google. It takes in a postfix virtual table. The Postfix table looks like this:
+
+john@example.com	john@example.com
+james@example.com	james@example.com
+
+john.doe@example.com	john@example.com
+james.cook@example.com	james@example.com
+postmaster@example.com	james@example.com
+
+perl creategoogleusertablefromvirtual.perl --domainname=example.com <virtual.txt
+
+It correctly correlates the first and last name and spits out this:
+
+Usertable:
+james	James	Cook	3df71baa43012913
+john	John	Doe	b1f948351e45ee84
+
+Aliases used:
+james
+james.cook
+postmaster
+
+john
+john.doe
+
+
+
 keychaincredentials.pm 
 ----------------------
 Module to get the credentials for an account out of the keychain.
+
+
 
 
 JNX::Configuration.pm
