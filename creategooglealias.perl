@@ -112,40 +112,28 @@ foreach my $alias (@aliases)
 			my $htmloutput = `$commandlineoption{curlcommand} "$redirecturl"`;
 			
 			
-			if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
+			if( $htmloutput !~ m#<a href="/a/cpanel/$commandlineoption{domainname}/cpanelLogout\?#io) 
 			{
 				print $htmloutput;
 				die __LINE__."Seems to be not logged in as admin on Dashboard (no menu users)\n";
 			}
-			if( 1 != ($htmloutput =~ m#<input\s+type="hidden"\s+name="at"\s+value="(.*?)">#io) )
-			{
-				print $htmloutput;
-				die __LINE__."Seems to be not logged in on Dashboard (no time)\n";
-			}
-			$timenow=$1;
 		}
 
 		{
 			my $htmloutput = `$commandlineoption{curlcommand}	"$commandlineoption{googleserver}/a/cpanel/$commandlineoption{domainname}/Users"`;
 			
 			
-			if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
+			if( $htmloutput !~ m#<a href="/a/cpanel/$commandlineoption{domainname}/cpanelLogout\?#io) 
 			{
 				print $htmloutput;
 				die __LINE__."Seems to be not logged in on Dashboard\n";
 			}
-			if( 1 != ($htmloutput =~ m#<input\s+type="hidden"\s+name="at"\s+value="(.*?)">#io) )
-			{
-				print $htmloutput;
-				die __LINE__."Seems to be not logged in on Dashboard (no time)\n";
-			}
-			$timenow=$1;
 		}
 		{
 			my $htmloutput = `$commandlineoption{curlcommand}	"$commandlineoption{googleserver}/a/cpanel/$commandlineoption{domainname}/User?userEmail=$commandlineoption{aliasuser}%40$commandlineoption{domainname}"`;
 			
 			
-			if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
+			if( $htmloutput !~ m#<a href="/a/cpanel/$commandlineoption{domainname}/cpanelLogout\?#io) 
 			{
 				print $htmloutput;
 				die __LINE__."Seems to be not logged in on Dashboard\n";
@@ -185,7 +173,7 @@ foreach my $alias (@aliases)
 		my $htmloutput = `$commandlineoption{curlcommand} $options	"$commandlineoption{googleserver}/a/cpanel/$commandlineoption{domainname}/UserAction"`;
 		
 		
-		if( $htmloutput !~ m#<li\s+class="(?:selected)?"\s+id="CPanelMenuUsers">#io) 
+		if( $htmloutput !~ m#<a href="/a/cpanel/$commandlineoption{domainname}/cpanelLogout\?#io) 
 		{
 			print $htmloutput;
 			die __LINE__."Seems to be not logged in on Dashboard\n";
