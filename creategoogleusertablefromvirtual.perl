@@ -23,7 +23,7 @@ while( my $line = <STDIN> )
 	chomp $line;
 	$line = lc $line;
 	
-	if( $line =~ m/^([a-z\_\-\+\.]+)\@$commandlineoption{domainname}\s+([a-z\_\-\+\.]+)\@$commandlineoption{domainname}\s*$/ )
+	if( $line =~ m/^([a-z\d\_\-\+\.]+)\@$commandlineoption{domainname}\s+([a-z\d\_\-\+\.]+)\@$commandlineoption{domainname}\s*$/ )
 	{
 		my($aliasname,$username) = ($1,$2);
 		
